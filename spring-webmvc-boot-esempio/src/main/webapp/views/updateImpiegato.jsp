@@ -31,13 +31,13 @@
   	<form id="aggiornamento"> 
         <input type="hidden" name="id" value="${impiegato.id}"/>
         <div class="inline">
-			<label for="nome">Nome: </label><input type="text" name="nome" value="${impiegato.nome}" />
+			<label for="nome">Nome: </label><input type="text" id="nome" name="nome" value="${impiegato.nome}" />
 		</div>
 		<div class="inline">
-			<label for="cognome">Cognome: </label><input type="text" name="cognome" value="${impiegato.cognome}" />
+			<label for="cognome">Cognome: </label><input type="text" id="cognome" name="cognome" value="${impiegato.cognome}" />
 		</div>
 		<div class="inline">
-		<label for="settore">Settore: </label><input type="text" name="settore" value="${impiegato.settore}" />
+		<label for="settore">Settore: </label><input type="text" id="settore" name="settore" value="${impiegato.settore}" />
 		</div>
 		<div class="inline">
 			<input type="submit" value="Aggiorna"/>
@@ -52,9 +52,9 @@
 		var xhttp = new XMLHttpRequest();
 	    xhttp.onreadystatechange = function() {
 	    	if (this.readyState === 4)
-	    		location.reload(true);
+	    		location.href='/';
 	    }
-		xhttp.open('put', '/api/impiegati/'${impiegato.id}, true);
+		xhttp.open('put', '/api/impiegati/' + ${impiegato.id}, true);
 		xhttp.setRequestHeader("Content-Type", "application/json");  
 	    xhttp.send(JSON.stringify({
 	    	nome: document.getElementById('nome').value,

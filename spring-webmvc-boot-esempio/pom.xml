@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>it.cybsec</groupId>
-	<artifactId>sping-webmvc-boot</artifactId>
+	<artifactId>spring-webmvc-boot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>sping-webmvc-boot-esempio</name>
+	<name>spring-webmvc-boot-esempio</name>
 	<description>Progetto di esempio per l'utilizzo di webmvc e boot</description>
 
 	<properties>
