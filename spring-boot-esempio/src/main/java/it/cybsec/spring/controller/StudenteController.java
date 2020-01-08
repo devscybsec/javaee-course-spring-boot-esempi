@@ -34,11 +34,12 @@ public class StudenteController {
 			@RequestParam(value = "nome", required = false) String nome,
 			@RequestParam(value = "cognome", required = false) String cognome,
 			@RequestParam(value = "datanascita", required = false) String dataNascita,
+			@RequestParam(value = "anno", required = false) Integer anno,
 			@RequestParam(value = "metodo", required = false, defaultValue = "greater") String dataNascitaMethod,
 			@RequestParam(value = "corsi", required = false) List<Corso> corsi,
 			@RequestParam(value = "corso_nome", required = false) String corsiNome
 			) throws ParseException {
-		return service.smartFind(nome, cognome, LocalDateFormatter.parse(dataNascita), dataNascitaMethod, corsi, corsiNome);
+		return service.smartFind(nome, cognome, LocalDateFormatter.parse(dataNascita), anno, dataNascitaMethod, corsi, corsiNome);
 	}
 	
 	@PostMapping

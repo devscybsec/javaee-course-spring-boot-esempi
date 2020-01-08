@@ -1,4 +1,4 @@
-package it.cybsec.spring.repository;
+package it.cybsec.spring.specifications;
 
 import java.util.List;
 

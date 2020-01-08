@@ -21,7 +21,17 @@ public class StudenteService {
 	@Autowired
 	private StudenteRepository repository;
 	
-	public List<Studente> smartFind(String nome, String cognome, LocalDate dataNascita,
+	public List<Studente> findAll(List<Specification<Studente>> specList) {
+		if (specList != null && specList.size() > 0) {
+			Specification<Studente> where = Specification.where(specList.get(0));
+			for (Specification<Studente> specification: specList.subList(1, specList.size()))
+				where = where.and(specification);
+			return repository.findAll(where);
+		} else
+			return repository.findAll();
+	}
+	
+	public List<Studente> smartFind(String nome, String cognome, LocalDate dataNascita, Integer anno,
 			String dataNascitaMethod, List<Corso> corsi, String nomeCorso) throws BadRequestException {
 		List<Specification<Studente>> specList = new ArrayList<Specification<Studente>>();
 		
@@ -29,29 +39,33 @@ public class StudenteService {
 			specList.add(StudenteRepository.nomeContaining(nome));
 		if (cognome != null) 
 			specList.add(StudenteRepository.cognomeContaining(cognome));
-		if (dataNascita != null) {
-			if (dataNascitaMethod.compareTo("less") == 0)
-				specList.add(StudenteRepository.dataNascitaLessThanEqual(dataNascita));
-			else if (dataNascitaMethod.compareTo("greater") == 0)
-				specList.add(StudenteRepository.dataNascitaGreaterThan(dataNascita));
-			else
-				throw new BadRequestException(String.format("Metodo %1$s per il controllo della data inesistente: usare less o greater!", dataNascitaMethod));
+		if (dataNascita != null || anno != null) {
+			if (dataNascita != null) {
+				if (dataNascitaMethod.compareTo("less") == 0)
+					specList.add(StudenteRepository.dataNascitaLessThanEqual(dataNascita));
+				else if (dataNascitaMethod.compareTo("greater") == 0)
+					specList.add(StudenteRepository.dataNascitaGreaterThan(dataNascita));
+				else
+					throw new BadRequestException(String.format("Metodo %1$s per il controllo della data inesistente: usare less o greater!", dataNascitaMethod));
+			} else {
+				if (dataNascitaMethod.compareTo("less") == 0)
+					specList.add(StudenteRepository.annoLessThanEqual(anno));
+				else if (dataNascitaMethod.compareTo("greater") == 0)
+					specList.add(StudenteRepository.annoGreaterThan(anno));
+				else
+					throw new BadRequestException(String.format("Metodo %1$s per il controllo dell'anno inesistente: usare less o greater!", dataNascitaMethod));
+			}
 		}
 		
 		if (corsi != null || nomeCorso != null) {
 			if (corsi != null)
-				corsi.forEach((corso) -> specList.add(StudenteRepository.corsoAllIn(corso)));
-			else if (nomeCorso != null)
+				specList.add(StudenteRepository.corsoAllIn(corsi));
+			else
 				specList.add(StudenteRepository.corsoNomeContaining(nomeCorso));
 		}
 		
-		if (specList.size() > 0) {
-			Specification<Studente> where = Specification.where(specList.get(0));
-			for (Specification<Studente> specification: specList.subList(1, specList.size()))
-				where = where.and(specification);
-			return repository.findAll(where);
-		} else
-			return repository.findAll();
+		return findAll(specList);
+
 	}
 	
 //	private Specification<Studente> specCorsiAllIn(List<Corso> corsi) {

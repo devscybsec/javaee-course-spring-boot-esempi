@@ -9,23 +9,35 @@ import java.util.Locale;
 
 public class LocalDateFormatter {
 
-	private static DateTimeFormatter dateFormat;
+	private static DateTimeFormatter defaultDateFormat;
 	
 	static {
-		dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-		dateFormat = dateFormat.withLocale(Locale.ITALY);
-		dateFormat = dateFormat.withZone(ZoneId.of("UTC"));
+		defaultDateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+		defaultDateFormat = defaultDateFormat.withLocale(Locale.ITALY);
+		defaultDateFormat = defaultDateFormat.withZone(ZoneId.of("UTC"));
+	}
+	
+	static public DateTimeFormatter getFormatter() {
+		return defaultDateFormat;
 	}
 	
 	static public LocalDate parse(String stringDate) throws ParseException {
-		if (stringDate == null)
-			return null;
-		return LocalDate.parse(stringDate,dateFormat);
+		if (stringDate == null) return null;
+		return LocalDate.parse(stringDate,defaultDateFormat);
 	}
 	
 	static public String format(LocalDate localDate) throws ParseException {
-		if (localDate == null)
-			return null;
+		if (localDate == null) return null;
+		return localDate.format(defaultDateFormat);
+	}
+	
+	static public LocalDate parse(String stringDate, DateTimeFormatter dateFormat) throws ParseException {
+		if (stringDate == null) return null;
+		return LocalDate.parse(stringDate,dateFormat);
+	}
+	
+	static public String format(LocalDate localDate, DateTimeFormatter dateFormat) throws ParseException {
+		if (localDate == null) return null;
 		return localDate.format(dateFormat);
 	}
 	
