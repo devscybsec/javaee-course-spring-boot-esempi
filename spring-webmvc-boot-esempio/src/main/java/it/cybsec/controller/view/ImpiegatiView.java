@@ -14,8 +14,7 @@ public class ImpiegatiView {
 	ImpiegatiRepository repo;
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String viewImpiegati(ModelMap impiegati) {
-		impiegati.addAttribute("impiegati", repo.findAll());
+	public String viewImpiegati() {
 		return "impiegati";
 	}
 	

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Spring MVC / Boot Application</title>
+    <meta charset="UTF-8">
+  </head>
+  <style>
+	table {
+		border-spacing: 0;
+	}
+	td, th {
+		padding: 4px;
+		border: 1px solid black;
+	}
+	.inline {
+		display: flex;
+		padding: 4px;
+	}
+	.inline > label {
+		width: 120px;
+	}
+	.incol {
+		display: flex;
+		flex-direction: column;
+	}
+</style>
+  <body>
+  	<h2>Aggiornamento</h2>
+  	<form id="aggiornamento"> 
+        <input type="hidden" id="id" name="id" />
+        <div class="inline">
+			<label for="nome">Nome: </label><input type="text" id="nome" name="nome" />
+		</div>
+		<div class="inline">
+			<label for="cognome">Cognome: </label><input type="text" id="cognome" name="cognome" />
+		</div>
+		<div class="inline">
+		<label for="settore">Settore: </label><input type="text" id="settore" name="settore" />
+		</div>
+		<div class="inline">
+			<input type="submit" value="Aggiorna"/>
+		</div>
+		<a href="./">
+			<input type="button" value="Go to impiegati" />
+		</a>
+    </form>
+  </body>
+  <script>
+	function getQueryParameters() {
+		var args = window.location.search.replace('?','').split('&');
+		var qps = {};
+		for (var i = 0; i < args.length; (i++)) {
+			var qp = args[i].split('=');
+			if (qp.length == 1)
+				qps[qp[0]] = true;
+			else
+				qps[qp[0]] = qp[1];
+		}
+		return qps;
+	}
+  
+	function getImpiegato() {
+		var xhttp = new XMLHttpRequest();
+	    xhttp.onreadystatechange = function() {
+	    	if (this.readyState === 4) {
+		    	var impiegato = JSON.parse(this.responseText);
+		    	document.getElementById('id').value = impiegato.id;
+		    	document.getElementById('nome').value = impiegato.nome;
+		    	document.getElementById('cognome').value = impiegato.cognome;
+		    	document.getElementById('settore').value = impiegato.settore;
+	    	}
+	    }
+		xhttp.open('get', '/api/impiegati/' + qps.id, true);
+	    xhttp.send();
+	}
+	
+	function aggiornaImpiegato() {
+		var xhttp = new XMLHttpRequest();
+	    xhttp.onreadystatechange = function() {
+	    	if (this.readyState === 4)
+	    		location.href='/';
+	    }
+		xhttp.open('put', '/api/impiegati/' + qps.id, true);
+		xhttp.setRequestHeader('Content-Type', 'application/json');  
+	    xhttp.send(JSON.stringify({
+	    	nome: document.getElementById('nome').value,
+	    	cognome: document.getElementById('cognome').value,
+	    	settore: document.getElementById('settore').value
+	    }));
+	}
+	
+	document.getElementById('aggiornamento').addEventListener('submit', function(event){
+		  event.preventDefault();
+		  aggiornaImpiegato();
+		});
+	
+	var qps = getQueryParameters();
+	if (qps.id)
+		getImpiegato();
+</script>
+</html>

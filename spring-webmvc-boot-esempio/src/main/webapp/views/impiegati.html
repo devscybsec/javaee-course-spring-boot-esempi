@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Spring MVC / Boot Application</title>
+<meta charset="UTF-8">
+<style>
+table {
+	border-spacing: 0;
+}
+
+td, th {
+	padding: 4px;
+	border: 1px solid black;
+}
+
+.inline {
+	display: flex;
+	padding: 4px;
+}
+
+.inline>label {
+	width: 120px;
+}
+
+.incol {
+	display: flex;
+	flex-direction: column;
+}
+</style>
+</head>
+<body>
+	<h2>Inserimento</h2>
+	<form id="inserimento" class="incol">
+		<div class="inline">
+			<label for="nome">Nome: </label>
+			<input id="nome" type="text" name="nome" />
+		</div>
+		<div class="inline">
+			<label for="cognome">Cognome: </label>
+			<input id="cognome" type="text" name="cognome" />
+		</div>
+		<div class="inline">
+			<label for="settore">Settore: </label>
+			<input id="settore" type="text" name="settore" />
+		</div>
+		<div class="inline">
+			<input type="submit" value="Inserisci" />
+		</div>
+	</form>
+
+	<h2>Risultati</h2>
+
+	<table>
+		<tbody id="tbody">
+			<tr>
+				<th>ID</th>
+				<th>Nome</th>
+				<th>Cognome</th>
+				<th>Settore</th>
+				<th>Comandi</th>
+			</tr>
+		</tbody>
+	</table>
+
+</body>
+<script>
+
+	function resetTable() {
+		var rows = document.getElementById("tbody").getElementsByTagName("tr");
+		while (rows.length > 1)
+			rows[1].remove();
+	}
+
+	function getImpiegati() {
+		var xhttp = new XMLHttpRequest();
+	    xhttp.onreadystatechange = function() {
+	    	if (this.readyState === 4) {
+	    	    var impiegati = JSON.parse(xhttp.responseText)._embedded.impiegati;
+	    	    var tbody = document.getElementById("tbody");
+	    		
+	    	    for (var i = 0; i < impiegati.length; i++) {
+		    	    var row = document.createElement("tr");
+
+		    	    var j = 0;
+		    	    while (j < 5) {
+						var cell = document.createElement("td");
+						switch(j) {
+							case 0: cell.appendChild(
+									document.createTextNode(impiegati[i].id)
+									);
+							break;
+							case 1: cell.appendChild(
+									document.createTextNode(impiegati[i].nome)
+									); 
+							break;
+							case 2: cell.appendChild(
+									document.createTextNode(impiegati[i].cognome)
+									); 
+							break;
+							case 3: cell.appendChild(
+									document.createTextNode(impiegati[i].settore)
+									); 
+							break;
+							case 4: 
+								var commands = document.createElement("div");
+								commands.classList.add("inline");
+								
+								var updateCommand = document.createElement("button");
+								updateCommand.appendChild(
+										document.createTextNode("Update")
+										)
+								updateCommand.setAttribute("onclick","location.href='/update?id=" + impiegati[i].id + "'");
+								
+								var deleteCommand = document.createElement("button");
+								deleteCommand.appendChild(
+										document.createTextNode("Delete")
+										)
+								deleteCommand.setAttribute("onclick","deleteImpiegato('" + impiegati[i].id + "')");
+								
+								var span = document.createElement("span");
+								span.style.width = "4px";
+								commands.appendChild(updateCommand);
+								commands.appendChild(span);
+								commands.appendChild(deleteCommand);
+								cell.appendChild(commands);
+								break;
+						}
+						row.appendChild(cell);
+						j++;
+			    	}
+		    	    tbody.appendChild(row);
+		    	}
+	    	}
+	    }
+		xhttp.open('get', '/api/impiegati', true);
+	    xhttp.send();
+	}
+
+	function deleteImpiegato(id) {
+		var xhttp = new XMLHttpRequest();
+	    xhttp.onreadystatechange = function() {
+	    	if (this.readyState === 4){
+	    		resetTable();
+	    		getImpiegati();
+	    	}
+	    }
+		xhttp.open('delete', '/api/impiegati/' + id, true);
+	    xhttp.send();
+	}
+	function insertImpiegato() {
+		var xhttp = new XMLHttpRequest();
+	    xhttp.onreadystatechange = function() {
+	    	if (this.readyState === 4){
+		  		document.getElementById('nome').value = "";
+			    document.getElementById('cognome').value = "";
+			    document.getElementById('settore').value = "";
+	    		resetTable();
+	    		getImpiegati();
+	    	}
+	    }
+		xhttp.open('post', '/api/impiegati', true);
+		xhttp.setRequestHeader("Content-Type", "application/json");  
+	    xhttp.send(JSON.stringify({
+	    	nome: document.getElementById('nome').value,
+	    	cognome: document.getElementById('cognome').value,
+	    	settore: document.getElementById('settore').value
+	    }));
+	}
+	document.getElementById("inserimento").addEventListener("submit", function(event){
+		  event.preventDefault();
+		  insertImpiegato();
+		});
+	getImpiegati();
+</script>
+</html>
